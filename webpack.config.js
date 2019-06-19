@@ -5,9 +5,7 @@ module.exports = {
   entry: './src/index',
   output: {
     path: path.resolve(__dirname, 'lib'),
-    filename: 'index.js',
-    libraryTarget: 'umd',
-    umdNamedDefine: true
+    filename: 'index.js'
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json']
