@@ -9,7 +9,7 @@ module.exports = {
     libraryTarget: 'umd',
     umdNamedDefine: true,
     library: 'md5',
-    globalObject: 'this'
+    globalObject: `typeof self !== 'undefined' ? self : this`
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json']
