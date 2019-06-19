@@ -7,8 +7,6 @@ module.exports = {
     path: path.resolve(__dirname, 'lib'),
     filename: 'index.js',
     libraryTarget: 'umd',
-    umdNamedDefine: true,
-    library: 'md5',
     globalObject: `typeof self !== 'undefined' ? self : this`
   },
   resolve: {
