@@ -15,4 +15,4 @@ function md5(string: string): string {
   return hex(md51(string, fn));
 }
 
-export default md5;
+export { md5 };

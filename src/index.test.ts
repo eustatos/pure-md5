@@ -1,4 +1,4 @@
-import md5 from "./";
+import { md5 } from "./";
 
 describe("md5", () => {
   it("", () => {
