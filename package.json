@@ -4,6 +4,18 @@
   "description": "A lightweight JavaScript function for hashing messages by the MD5 algorithm",
   "main": "index.html",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eustatos/pure-md5.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eustatos/pure-md5/issues"
+  },
+  "homepage": "https://github.com/eustatos/pure-md5",
+  "author": {
+    "name": "Aleksandr Astashkin",
+    "email": "astashinav@gmail.com"
+  },
   "scripts": {
     "prepublishOnly": "npm run test",
     "prepare": "npm run build",
