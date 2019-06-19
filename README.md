@@ -2,8 +2,8 @@
 
 [![npm version](http://img.shields.io/npm/v/pure-md5.svg?style=flat)](https://npmjs.org/package/bitrix24-verify-sign "View this project on npm")
 [![npm downloads](http://img.shields.io/npm/dm/pure-md5.svg?style=flat)](https://npmjs.org/package/bitrix24-verify-sign "View this project on npm")
-[![Build Status](https://travis-ci.org/eustatos/pure-md5.svg?branch=master)](https://travis-ci.org/eustatos/bitrix24-verify-sign)
-[![codecov](https://codecov.io/gh/eustatos/pure-md5/branch/master/graph/badge.svg)](https://codecov.io/gh/eustatos/bitrix24-verify-sign)
+[![Build Status](https://travis-ci.org/eustatos/pure-md5.svg?branch=master)](https://travis-ci.org/eustatos/pure-md5)
+[![codecov](https://codecov.io/gh/eustatos/pure-md5/branch/master/graph/badge.svg)](https://codecov.io/gh/eustatos/pure-md5)
 [![Maintainability](https://api.codeclimate.com/v1/badges/3aa330606ecdddb80dff/maintainability)](https://codeclimate.com/github/eustatos/pure-md5/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/3aa330606ecdddb80dff/test_coverage)](https://codeclimate.com/github/eustatos/pure-md5/test_coverage)
 
