@@ -1,0 +1,37 @@
+{
+  "name": "pure-md5",
+  "version": "0.1.0",
+  "description": "A lightweight JavaScript function for hashing messages by the MD5 algorithm",
+  "main": "index.html",
+  "license": "MIT",
+  "scripts": {
+    "prepublishOnly": "npm run test",
+    "prepare": "npm run build",
+    "build": "npm run build:types && npm run build:js",
+    "build:js": "webpack --mode=production",
+    "build:types": "tsc --emitDeclarationOnly",
+    "test": "jest --coverage",
+    "coverage": "codecov -f coverage/*.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jest": "^24.0.15",
+    "babel-loader": "8.0.4",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.2",
+    "webpack": "^4.34.0",
+    "webpack-cli": "^3.3.4"
+  },
+  "keywords": [
+    "md5"
+  ],
+  "files": [
+    "./lib/**/*"
+  ]
+}
