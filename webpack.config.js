@@ -8,7 +8,8 @@ module.exports = {
     filename: 'index.js',
     libraryTarget: 'umd',
     umdNamedDefine: true,
-    library: 'md5'
+    library: 'md5',
+    globalObject: 'this'
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json']
