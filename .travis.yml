@@ -3,4 +3,4 @@ node_js:
 - node
 scripts:
 - npm test
-- npm run coverage -- -t bcced72a-1bff-4e9f-9b2c-aabfbd36f63d
+- npm run coverage -- -t CODECOVE_TOKEN
