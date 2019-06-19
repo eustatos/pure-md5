@@ -2,7 +2,8 @@
   "name": "pure-md5",
   "version": "0.1.0",
   "description": "A lightweight JavaScript function for hashing messages by the MD5 algorithm",
-  "main": "index.html",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
