@@ -15,7 +15,7 @@
   "homepage": "https://github.com/eustatos/pure-md5",
   "author": {
     "name": "Aleksandr Astashkin",
-    "email": "astashinav@gmail.com"
+    "email": "astashkinav@gmail.com"
   },
   "scripts": {
     "prepublishOnly": "npm run test",
