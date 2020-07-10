@@ -1,6 +1,6 @@
 {
   "name": "pure-md5",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "A lightweight JavaScript function for hashing messages by the MD5 algorithm",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
