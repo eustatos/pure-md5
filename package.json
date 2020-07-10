@@ -44,9 +44,5 @@
   },
   "keywords": [
     "md5"
-  ],
-  "files": [
-    "./lib/index.js",
-    "./lib/index.d.ts"
   ]
 }
