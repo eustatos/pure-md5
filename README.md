@@ -6,6 +6,7 @@
 [![codecov](https://codecov.io/gh/eustatos/pure-md5/branch/master/graph/badge.svg)](https://codecov.io/gh/eustatos/pure-md5)
 [![Maintainability](https://api.codeclimate.com/v1/badges/3aa330606ecdddb80dff/maintainability)](https://codeclimate.com/github/eustatos/pure-md5/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/3aa330606ecdddb80dff/test_coverage)](https://codeclimate.com/github/eustatos/pure-md5/test_coverage)
+[![Node.js Package](https://github.com/eustatos/pure-md5/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/eustatos/pure-md5/actions/workflows/npm-publish.yml)
 
 ## Install
 
