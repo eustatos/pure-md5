@@ -61,6 +61,11 @@
       "import": "./dist/utils/detect.js",
       "require": "./dist/utils/detect.js"
     },
+    "./stream/md5-stream": {
+      "types": "./dist/stream/md5-stream.d.ts",
+      "import": "./dist/stream/md5-stream.js",
+      "require": "./dist/stream/md5-stream.js"
+    },
     "./package.json": "./package.json"
   },
   "devDependencies": {
