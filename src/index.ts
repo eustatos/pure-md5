@@ -7,6 +7,7 @@ import { md5Core as pureMD5 } from './core/index.js';
 import { WebCryptoBackend } from './adapters/webcrypto.js';
 import { NodeCryptoBackend } from './adapters/node.js';
 import { IE11Backend } from './adapters/ie11.js';
+// PureJSBackend is exported below, not used directly in this file
 import {
   getAllAvailableBackends,
   getBestAvailableBackend
@@ -16,10 +17,18 @@ export { md5Core } from './core/index.js';
 export { WebCryptoBackend } from './adapters/webcrypto.js';
 export { NodeCryptoBackend } from './adapters/node.js';
 export { IE11Backend } from './adapters/ie11.js';
+export { PureJSBackend } from './adapters/pure-js.js';
 export { MD5Backend } from './adapters/types.js';
 export {
   getAllAvailableBackends,
-  getBestAvailableBackend
+  getBestAvailableBackend,
+  BackendDetector,
+  detector,
+  FallbackManager,
+  fallbackManager,
+  robustHash,
+  MetricsCollector,
+  metrics
 } from './utils/detect.js';
 
 /**
