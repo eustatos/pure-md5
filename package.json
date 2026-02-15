@@ -2,9 +2,11 @@
   "name": "pure-md5",
   "version": "0.1.15",
   "description": "A lightweight JavaScript function for hashing messages by the MD5 algorithm",
+  "type": "module",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -31,9 +33,35 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "require": "./dist/index.js"
-    }
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js",
+      "require": "./dist/core/index.js"
+    },
+    "./adapters/webcrypto": {
+      "types": "./dist/adapters/webcrypto.d.ts",
+      "import": "./dist/adapters/webcrypto.js",
+      "require": "./dist/adapters/webcrypto.js"
+    },
+    "./adapters/node": {
+      "types": "./dist/adapters/node.d.ts",
+      "import": "./dist/adapters/node.js",
+      "require": "./dist/adapters/node.js"
+    },
+    "./adapters/ie11": {
+      "types": "./dist/adapters/ie11.d.ts",
+      "import": "./dist/adapters/ie11.js",
+      "require": "./dist/adapters/ie11.js"
+    },
+    "./detect": {
+      "types": "./dist/utils/detect.d.ts",
+      "import": "./dist/utils/detect.js",
+      "require": "./dist/utils/detect.js"
+    },
+    "./package.json": "./package.json"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",

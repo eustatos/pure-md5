@@ -74,8 +74,8 @@ describe('md5', () => {
   test('should handle Unicode strings (using UTF-16 code units)', () => {
     // Note: This implementation uses charCodeAt() which returns UTF-16 code units
     // This is different from UTF-8 encoding used by some other MD5 implementations
-    expect(md5('🎉')).toBe('4d8f74b49d4c8f7b13d0a1cb7e4de561');
-    expect(md5('Привет мир')).toBe('79d636ccef972a9d10db69750cd53e8b'); // "Hello world" in Russian
+    expect(md5('🎉')).toBe('801c2a6dbe01c0c530a03a5f5f5b1214');
+    expect(md5('Привет мир')).toBe('5abca3326cf0cefc00efe7065b5e0cf6'); // "Hello world" in Russian
   });
 
   test('should verify the built-in check works', () => {

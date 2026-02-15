@@ -13,7 +13,7 @@ function md51(s: string, add32?: Add32Function): number[] {
   s = s.substring(i - 64);
   var tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     sl = s.length;
-  for (i = 0; i < sl; i++) tail[i >> 2] |= s.charCodeAt(i) << ((i % 4) << 3);
+  for (i = 0; i < sl; i++) tail[i >> 2] |= (s.charCodeAt(i) & 0xff) << ((i % 4) << 3);
   tail[i >> 2] |= 0x80 << ((i % 4) << 3);
   if (i > 55) {
     md5cycle(state, tail, add32);

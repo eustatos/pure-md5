@@ -1,0 +1,29 @@
+# Project Style Rules
+
+## Language Policy
+
+**All documentation, commits, and comments must be written in English.**
+
+### Commit Messages
+- Use clear, descriptive commit messages in English
+- Follow conventional commit format when applicable:
+  ```
+  feat: add streaming support for large files
+  fix: correct md5 block padding calculation
+  docs: update installation instructions
+  test: add coverage for edge cases
+  ```
+
+### Code Comments
+- Write all comments in English
+- Use clear, descriptive variable and function names
+- Include JSDoc/type descriptions in English for all public APIs
+
+### Documentation
+- Write all documentation in English
+- Include English examples showing expected input/output
+- Keep README files and guides in English
+
+### Pull Requests
+- Describe changes in English
+- Reference issues using proper syntax (e.g., `Fixes #123`)
