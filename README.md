@@ -22,6 +22,37 @@ import {md5} from 'pure-md5';
 const hash = md5('hello'); // 5d41402abc4b2a76b9719d911017c592
 ```
 
+### Streaming MD5
+
+For hashing large files or streams of data:
+
+```javascript
+import { MD5Stream, pipeThroughMD5, fromStream } from 'pure-md5';
+import fs from 'fs';
+
+// Using the stream directly
+const stream = new MD5Stream();
+stream.on('md5', (result) => {
+  console.log('MD5:', result.digest);
+  console.log('Bytes:', result.bytesProcessed);
+});
+
+fs.createReadStream('file.txt').pipe(stream);
+
+// Using pipeThroughMD5 with async/await
+import { Readable } from 'stream';
+
+const source = Readable.from(['hello', ' ', 'world']);
+const result = await pipeThroughMD5(source);
+console.log('MD5:', result.digest);
+
+// Using fromStream helper
+import { fromStream } from 'pure-md5';
+
+const { stream, result } = fromStream(fs.createReadStream('file.txt'));
+result.then(r => console.log('MD5:', r.digest));
+```
+
 ### CDN
 
 ```html

@@ -233,3 +233,58 @@ export class MD5Stream extends Transform {
 export function createMD5Stream(options?: MD5StreamOptions): MD5Stream {
   return new MD5Stream(options);
 }
+
+/**
+ * Result type for MD5 computation
+ */
+export interface MD5Result {
+  /**
+   * MD5 hash as hex string
+   */
+  digest: string;
+  /**
+   * Number of bytes processed
+   */
+  bytesProcessed: number;
+}
+
+/**
+ * Pipe through MD5 stream helper
+ * @param this - MD5Stream instance
+ * @param source - Source readable stream to process
+ * @returns Promise with MD5 result
+ */
+export async function pipeThroughMD5(
+  this: MD5Stream,
+  source: import('stream').Readable
+): Promise<MD5Result> {
+  return new Promise((resolve, reject) => {
+    const results: MD5Result[] = [];
+    
+    source
+      .pipe(this)
+      .on('md5', (result: MD5Result) => {
+        results.push(result);
+      })
+      .on('error', reject)
+      .on('finish', () => {
+        resolve(results[0]);
+      });
+  });
+}
+
+/**
+ * Static method to create MD5Stream from existing readable stream
+ * @param source - Source readable stream
+ * @param options - MD5Stream options
+ * @returns Object containing stream and result promise
+ */
+export function fromStream(
+  source: import('stream').Readable,
+  options?: MD5StreamOptions
+): { stream: MD5Stream; result: Promise<MD5Result> } {
+  const stream = new MD5Stream(options);
+  const result = pipeThroughMD5.call(stream, source);
+  
+  return { stream, result };
+}

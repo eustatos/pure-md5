@@ -8,7 +8,7 @@ export default defineConfig({
     'src/adapters/node.ts',
     'src/adapters/ie11.ts',
     'src/utils/detect.ts',
-    'src/stream/md5-stream.ts'
+    'src/stream/index.ts'
   ],
   format: ['cjs', 'esm'], // CommonJS and ES modules
   dts: true, // .d.ts file generation

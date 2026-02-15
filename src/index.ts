@@ -20,7 +20,13 @@ export { NodeCryptoBackend } from './adapters/node.js';
 export { IE11Backend } from './adapters/ie11.js';
 export { PureJSBackend } from './adapters/pure-js.js';
 export { MD5Backend } from './adapters/types.js';
-export { MD5Stream, createMD5Stream } from './stream/md5-stream.js';
+export {
+  MD5Stream,
+  MD5Result,
+  createMD5Stream,
+  pipeThroughMD5,
+  fromStream
+} from './stream/index.js';
 export {
   getAllAvailableBackends,
   getBestAvailableBackend,

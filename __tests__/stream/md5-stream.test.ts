@@ -296,3 +296,94 @@ describe('MD5Stream', () => {
     stream.end();
   });
 });
+
+import { Readable } from 'stream';
+
+describe('pipeThroughMD5 and fromStream', () => {
+  test('should support pipeThroughMD5 method', async () => {
+    const { pipeThroughMD5 } = await import('../../src/stream/md5-stream.js');
+    const { md5Core } = await import('../../src/core/index.js');
+    
+    const stream = new MD5Stream();
+    const input = 'pipe through test';
+    const source = Readable.from([input]);
+    
+    const result = await pipeThroughMD5.call(stream, source);
+    
+    expect(result.digest).toBe(md5Core(input));
+    expect(result.bytesProcessed).toBe(input.length);
+  });
+
+  test('should support fromStream static method', async () => {
+    const { fromStream } = await import('../../src/stream/md5-stream.js');
+    const { md5Core } = await import('../../src/core/index.js');
+    
+    const input = 'from stream test';
+    const source = Readable.from([input]);
+    
+    const { stream, result } = fromStream(source);
+    
+    expect(stream).toBeInstanceOf(MD5Stream);
+    
+    const resultData = await result;
+    expect(resultData.digest).toBe(md5Core(input));
+    expect(resultData.bytesProcessed).toBe(input.length);
+  });
+
+  test('should support fromStream with options', async () => {
+    const { fromStream } = await import('../../src/stream/md5-stream.js');
+    const { md5Core } = await import('../../src/core/index.js');
+    
+    const input = 'from stream with options test';
+    const source = Readable.from([input]);
+    const customAdd32 = (x: number, y: number) => (x + y) & 0xffffffff;
+    
+    const { result } = fromStream(source, { add32: customAdd32 });
+    
+    const resultData = await result;
+    expect(resultData.digest).toBe(md5Core(input));
+    expect(resultData.bytesProcessed).toBe(input.length);
+  });
+
+  test('should handle empty stream with pipeThroughMD5', async () => {
+    const { pipeThroughMD5 } = await import('../../src/stream/md5-stream.js');
+    const { md5Core } = await import('../../src/core/index.js');
+    
+    const stream = new MD5Stream();
+    const source = Readable.from([]);
+    
+    const result = await pipeThroughMD5.call(stream, source);
+    
+    expect(result.digest).toBe(md5Core(''));
+    expect(result.bytesProcessed).toBe(0);
+  });
+
+  test('should handle large data with pipeThroughMD5', async () => {
+    const { pipeThroughMD5 } = await import('../../src/stream/md5-stream.js');
+    const { md5Core } = await import('../../src/core/index.js');
+    
+    const stream = new MD5Stream();
+    const input = 'a'.repeat(10000);
+    const source = Readable.from([input]);
+    
+    const result = await pipeThroughMD5.call(stream, source);
+    
+    expect(result.digest).toBe(md5Core(input));
+    expect(result.bytesProcessed).toBe(input.length);
+  });
+
+  test('should handle chunked data with fromStream', async () => {
+    const { fromStream } = await import('../../src/stream/md5-stream.js');
+    const { md5Core } = await import('../../src/core/index.js');
+    
+    const input = 'chunked data test';
+    const chunks = ['chunked ', 'data ', 'test'];
+    const source = Readable.from(chunks);
+    
+    const { result } = fromStream(source);
+    
+    const resultData = await result;
+    expect(resultData.digest).toBe(md5Core(input));
+    expect(resultData.bytesProcessed).toBe(input.length);
+  });
+});
