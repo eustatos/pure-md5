@@ -1,0 +1,10 @@
+name: ts-language-mcp
+version: 0.0.1
+schema: v1
+mcpServers:
+  - name: ts-language-mcp
+    command: node
+    args:
+      - /Users/aleksanderastashkin/develop/ts-language-mcp/dist/index.js
+      - /Users/aleksanderastashkin/develop/pure-md5
+    env: {}

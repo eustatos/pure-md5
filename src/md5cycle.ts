@@ -1,10 +1,9 @@
-import ff from './ff';
-import gg from './gg';
-import hh from './hh';
-import ii from './ii';
 import add32 from './add32';
+import { ff, gg, hh, ii } from './round-functions';
 
-function md5cycle(x: number[], k: number[], fn?): void {
+type Add32Function = (x: number, y: number) => number;
+
+function md5cycle(x: number[], k: number[], fn?: Add32Function): void {
   if (typeof fn === 'undefined') {
     fn = add32;
   }
