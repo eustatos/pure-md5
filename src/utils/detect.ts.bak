@@ -154,7 +154,7 @@ export const BACKEND_PRIORITY: BackendPriority[] = [
     priority: 5,
     description: "Pure JavaScript (always available, slower)"
   }
-];
+];;
 
 export function getBestAvailableBackend(availableBackends: string[]): string {
   const sortedPriority = [...BACKEND_PRIORITY].sort((a, b) => a.priority - b.priority);
@@ -191,8 +191,6 @@ export class BackendDetector {
         return new WebCryptoBackend();
       case "ie11":
         return new IE11Backend();
-      case "stream":
-        return new StreamBackend();
       case "purejs":
       default:
         return new PureJSBackend();
@@ -221,7 +219,7 @@ export class FallbackManager {
   public detector: BackendDetector;
   private fallbackOrder: string[];
 
-  constructor(fallbackOrder: string[] = ["nodecrypto", "webcrypto", "stream", "ie11", "purejs"]) {
+  constructor(fallbackOrder: string[] = ["nodecrypto", "webcrypto", "ie11", "purejs"]) {
     this.detector = BackendDetector.getInstance();
     this.fallbackOrder = fallbackOrder;
   }
@@ -378,7 +376,6 @@ export class MetricsCollector {
     nodecrypto: { success: 0, fail: 0 },
     webcrypto: { success: 0, fail: 0 },
     ie11: { success: 0, fail: 0 },
-    stream: { success: 0, fail: 0 },
     purejs: { success: 0, fail: 0 }
   };
 

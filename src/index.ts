@@ -7,6 +7,7 @@ import { md5Core as pureMD5 } from './core/index.js';
 import { WebCryptoBackend } from './adapters/webcrypto.js';
 import { NodeCryptoBackend } from './adapters/node.js';
 import { IE11Backend } from './adapters/ie11.js';
+import { StreamBackend } from './stream/adapter.js';
 //
 // PureJSBackend is exported below, not used directly in this file
 import {
@@ -116,6 +117,8 @@ class MD5Adapter {
         return new WebCryptoBackend();
       case 'ie11':
         return new IE11Backend();
+      case 'stream':
+        return new StreamBackend();
       case 'purejs':
       default:
         return {

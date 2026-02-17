@@ -9,7 +9,11 @@ export default defineConfig({
     'src/adapters/ie11.ts',
     'src/utils/detect.ts',
     'src/stream/index.ts',
-    'src/stream/whatwg-stream.ts'
+    'src/stream/light/index.ts',
+    'src/stream/md5-stream.ts',
+    'src/stream/whatwg-stream.ts',
+    'src/stream/fs-utils.ts',
+    'src/stream/adapter.ts'
   ],
   format: ['cjs', 'esm'], // CommonJS and ES modules
   dts: true, // .d.ts file generation

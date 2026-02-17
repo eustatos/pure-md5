@@ -76,6 +76,11 @@
       "import": "./dist/stream/index.js",
       "require": "./dist/stream/index.js"
     },
+    "./stream/light": {
+      "types": "./dist/stream/light/index.d.ts",
+      "import": "./dist/stream/light/index.js",
+      "require": "./dist/stream/light/index.js"
+    },
     "./package.json": "./package.json"
   },
   "devDependencies": {
