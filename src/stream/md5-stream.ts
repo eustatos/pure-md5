@@ -223,6 +223,22 @@ export class MD5Stream extends Transform {
       bufferLength: 0
     };
   }
+
+  /**
+   * Static method to create MD5Stream from existing readable stream
+   * @param source - Source readable stream
+   * @param options - MD5Stream options
+   * @returns Object containing stream and result promise
+   */
+  static fromStream(
+    source: import('stream').Readable,
+    options?: MD5StreamOptions
+  ): { stream: MD5Stream; result: Promise<MD5Result> } {
+    const stream = new MD5Stream(options);
+    const result = pipeThroughMD5.call(stream, source);
+    
+    return { stream, result };
+  }
 }
 
 /**

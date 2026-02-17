@@ -386,4 +386,33 @@ describe('pipeThroughMD5 and fromStream', () => {
     expect(resultData.digest).toBe(md5Core(input));
     expect(resultData.bytesProcessed).toBe(input.length);
   });
+
+  test('should support MD5Stream.fromStream static method', async () => {
+    const { md5Core } = await import('../../src/core/index.js');
+    
+    const input = 'static fromStream test';
+    const source = Readable.from([input]);
+    
+    const { stream, result } = MD5Stream.fromStream(source);
+    
+    expect(stream).toBeInstanceOf(MD5Stream);
+    
+    const resultData = await result;
+    expect(resultData.digest).toBe(md5Core(input));
+    expect(resultData.bytesProcessed).toBe(input.length);
+  });
+
+  test('should support MD5Stream.fromStream with options', async () => {
+    const { md5Core } = await import('../../src/core/index.js');
+    
+    const input = 'static fromStream with options test';
+    const source = Readable.from([input]);
+    const customAdd32 = (x: number, y: number) => (x + y) & 0xffffffff;
+    
+    const { result } = MD5Stream.fromStream(source, { add32: customAdd32 });
+    
+    const resultData = await result;
+    expect(resultData.digest).toBe(md5Core(input));
+    expect(resultData.bytesProcessed).toBe(input.length);
+  });
 });

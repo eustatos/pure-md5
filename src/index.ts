@@ -25,7 +25,15 @@ export {
   MD5Result,
   createMD5Stream,
   pipeThroughMD5,
-  fromStream
+  fromStream,
+  hashFile,
+  hashFileStream,
+  hashFileDigest,
+  hashFileStreamDigest,
+  hashFileSync,
+  verifyFile,
+  createProgressTracker,
+  HashFileOptions
 } from './stream/index.js';
 export {
   getAllAvailableBackends,
