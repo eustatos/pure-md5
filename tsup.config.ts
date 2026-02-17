@@ -8,7 +8,8 @@ export default defineConfig({
     'src/adapters/node.ts',
     'src/adapters/ie11.ts',
     'src/utils/detect.ts',
-    'src/stream/index.ts'
+    'src/stream/index.ts',
+    'src/stream/whatwg-stream.ts'
   ],
   format: ['cjs', 'esm'], // CommonJS and ES modules
   dts: true, // .d.ts file generation

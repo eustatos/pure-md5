@@ -66,6 +66,11 @@
       "import": "./dist/stream/md5-stream.js",
       "require": "./dist/stream/md5-stream.js"
     },
+    "./stream/whatwg-stream": {
+      "types": "./dist/stream/whatwg-stream.d.ts",
+      "import": "./dist/stream/whatwg-stream.js",
+      "require": "./dist/stream/whatwg-stream.js"
+    },
     "./stream": {
       "types": "./dist/stream/index.d.ts",
       "import": "./dist/stream/index.js",

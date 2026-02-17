@@ -1,0 +1,522 @@
+/**
+ * WHATWG Streams support for browser environments
+ * Provides streaming MD5 hashing for ReadableStream, File, and Blob objects
+ */
+
+import md5cycle from '../md5cycle';
+import hex from '../hex';
+import add32 from '../add32';
+
+/**
+ * Result type for MD5 computation
+ */
+export interface MD5Result {
+  /**
+   * MD5 hash as hex string
+   */
+  digest: string;
+  /**
+   * Number of bytes processed
+   */
+  bytesProcessed: number;
+}
+
+/**
+ * Interface for WHATWG Streams MD5 options
+ */
+export interface MD5ReadableStreamOptions {
+  /**
+   * Custom add32 function for compatibility testing
+   */
+  add32?: (x: number, y: number) => number;
+}
+
+/**
+ * Internal state interface for MD5 computation
+ */
+export interface MD5State {
+  state: number[];
+  bytesProcessed: number;
+  bufferLength: number;
+  buffer: Uint8Array;
+}
+
+/**
+ * Internal state values
+ */
+const initialMD5State = [1732584193, -271733879, -1732584194, 271733878];
+
+/**
+ * MD5ReadableStream - Wrapper for computing MD5 hashes while reading from a ReadableStream
+ * 
+ * This class wraps a ReadableStream and computes MD5 hash while reading data.
+ * It follows the ReadableStream API pattern for browser environments.
+ */
+export class MD5ReadableStream {
+  private sourceStream: ReadableStream;
+  private state: MD5State;
+  private add32: (x: number, y: number) => number;
+  private result: MD5Result | null = null;
+  private resultResolver: ((result: MD5Result) => void) | null = null;
+  private resultPromise: Promise<MD5Result>;
+  private consumed: boolean = false;
+  private readonly bufferCapacity: number = 64;
+  private buffer: Uint8Array = new Uint8Array(this.bufferCapacity);
+
+  /**
+   * Create new MD5ReadableStream instance
+   * @param source - Source ReadableStream to hash
+   * @param options - Stream options
+   */
+  constructor(
+    source: ReadableStream,
+    options: MD5ReadableStreamOptions = {}
+  ) {
+    this.sourceStream = source;
+    
+    this.state = {
+      state: [...initialMD5State],
+      bytesProcessed: 0,
+      bufferLength: 0,
+      buffer: this.buffer
+    };
+    
+    this.add32 = options.add32 || add32;
+
+    // Create promise for result
+    this.resultPromise = new Promise<MD5Result>((resolve) => {
+      this.resultResolver = resolve;
+    });
+  }
+
+  /**
+   * Get a reader for this stream
+   * @returns ReadableStreamDefaultReader
+   */
+  getReader(): ReadableStreamDefaultReader<Uint8Array> {
+    if (this.consumed) {
+      throw new Error('Cannot get reader from MD5ReadableStream: stream has already been consumed');
+    }
+    this.consumed = true;
+    
+    // Create a new stream that processes data and computes MD5
+    const { readable, writable } = new TransformStream({
+      transform: async (chunk, controller) => {
+        await this.processChunk(chunk);
+        controller.enqueue(chunk);
+      },
+      flush: async (_controller) => {
+        this.finalize();
+        if (this.resultResolver) {
+          this.resultResolver(this.result!);
+        }
+      }
+    });
+    
+    // Pipe source stream to our transform stream
+    this.sourceStream.pipeTo(writable).catch((error) => {
+      console.error('Error piping stream:', error);
+      if (this.resultResolver) {
+        this.resultResolver({
+          digest: '',
+          bytesProcessed: this.state.bytesProcessed
+        });
+      }
+    });
+    
+    return readable.getReader();
+  }
+
+  /**
+   * Process a data chunk and update MD5 state
+   * @param chunk - Data chunk (ArrayBuffer or Uint8Array)
+   */
+  private async processChunk(
+    chunk: ArrayBuffer | Uint8Array | Blob
+  ): Promise<void> {
+    let data: Uint8Array;
+
+    // Convert Blob to ArrayBuffer if needed
+    if (chunk instanceof Blob) {
+      data = new Uint8Array(await chunk.arrayBuffer());
+    } else if (chunk instanceof ArrayBuffer) {
+      data = new Uint8Array(chunk);
+    } else {
+      data = chunk;
+    }
+
+    // Process the data
+    const dataLength = data.length;
+    
+    if (dataLength === 0) {
+      return;
+    }
+
+    // Combine with remaining buffer if needed
+    if (this.state.bufferLength > 0) {
+      const currentBufferLength = this.state.bufferLength;
+      const neededBytes = 64 - currentBufferLength;
+      const bytesToCopy = Math.min(dataLength, neededBytes);
+      
+      // Copy data to buffer
+      for (let i = 0; i < bytesToCopy; i++) {
+        this.buffer[currentBufferLength + i] = data[i];
+      }
+      
+      this.state.bufferLength += bytesToCopy;
+      
+      // If buffer is full, process it
+      if (this.state.bufferLength === 64) {
+        this._processBufferBlock();
+      }
+      
+      // If we used all data, we're done
+      if (bytesToCopy === dataLength) {
+        return;
+      }
+      
+      // Move to next position in original data
+      // Shift remaining data to beginning of buffer
+      const remainingData = dataLength - bytesToCopy;
+      const newData = new Uint8Array(remainingData);
+      for (let i = 0; i < remainingData; i++) {
+        newData[i] = data[bytesToCopy + i];
+      }
+      data = newData;
+    }
+    
+    // Process full 64-byte blocks directly from data
+    const fullBlocks = Math.floor(data.length / 64);
+    
+    for (let i = 0; i < fullBlocks; i++) {
+      const blockStart = i * 64;
+      const block: number[] = [];
+      
+      for (let j = 0; j < 16; j++) {
+        const idx = blockStart + j * 4;
+        block[j] = 
+          data[idx] +
+          (data[idx + 1] << 8) +
+          (data[idx + 2] << 16) +
+          (data[idx + 3] << 24);
+      }
+      
+      md5cycle(this.state.state, block, this.add32);
+      this.state.bytesProcessed += 64;
+    }
+    
+    // Store remaining bytes in buffer
+    const remaining = data.length % 64;
+    if (remaining > 0) {
+      // Ensure buffer is large enough
+      if (this.buffer.length < remaining) {
+        this.buffer = new Uint8Array(remaining);
+        this.state.buffer = this.buffer;
+      }
+      
+      // Copy remaining bytes to buffer
+      for (let i = 0; i < remaining; i++) {
+        this.buffer[i] = data[fullBlocks + i];
+      }
+      this.state.bufferLength = remaining;
+    }
+  }
+
+  /**
+   * Process the current buffer as a complete block
+   */
+  private _processBufferBlock(): void {
+    const buffer = this.state.buffer;
+    const block: number[] = [];
+    
+    for (let j = 0; j < 16; j++) {
+      const idx = j * 4;
+      block[j] = 
+        buffer[idx] +
+        (buffer[idx + 1] << 8) +
+        (buffer[idx + 2] << 16) +
+        (buffer[idx + 3] << 24);
+    }
+    
+    md5cycle(this.state.state, block, this.add32);
+    this.state.bytesProcessed += 64;
+    this.state.bufferLength = 0;
+  }
+
+  /**
+   * Finalize MD5 computation
+   */
+  private finalize(): void {
+    const { state, bufferLength, buffer } = this.state;
+    
+    // Final padding
+    const tail: number[] = new Array(16).fill(0);
+    
+    // Copy remaining buffer
+    for (let i = 0; i < bufferLength; i++) {
+      tail[i >> 2] |= (buffer[i] & 0xff) << ((i % 4) << 3);
+    }
+    
+    // Append 0x80
+    tail[bufferLength >> 2] |= 0x80 << ((bufferLength % 4) << 3);
+    
+    // If not enough space for length, process current block
+    if (bufferLength > 55) {
+      md5cycle(state, tail, this.add32);
+      for (let i = 0; i < 16; i++) {
+        tail[i] = 0;
+      }
+    }
+    
+    // Append length (in bits) - include remaining bytes
+    tail[14] = (this.state.bytesProcessed + bufferLength) * 8;
+    tail[15] = 0; // High 32 bits of length (not used for typical files)
+    
+    // Final MD5 cycle
+    md5cycle(state, tail, this.add32);
+    
+    // Generate hex digest
+    const digest = hex(state);
+    
+    // Store result
+    this.result = {
+      digest,
+      bytesProcessed: this.state.bytesProcessed + bufferLength
+    };
+  }
+
+  /**
+   * Get the MD5 result promise
+   * @returns Promise with MD5 result
+   */
+  public getResult(): Promise<MD5Result> {
+    return this.resultPromise;
+  }
+
+  /**
+   * Get current MD5 state (for debugging/testing)
+   * @returns Current internal state
+   */
+  public getCurrentState(): { state: number[]; bytesProcessed: number } {
+    return {
+      state: [...this.state.state],
+      bytesProcessed: this.state.bytesProcessed + this.state.bufferLength
+    };
+  }
+
+  /**
+   * Get bytes processed so far
+   * @returns Number of bytes processed
+   */
+  public getBytesProcessed(): number {
+    return this.state.bytesProcessed + this.state.bufferLength;
+  }
+
+  /**
+   * Static method to hash a ReadableStream and return MD5 result
+   * @param source - Source ReadableStream to hash
+   * @param options - Stream options
+   * @returns Promise with MD5 result
+   */
+  static hash(source: ReadableStream, options?: MD5ReadableStreamOptions): Promise<MD5Result> {
+    const stream = new MD5ReadableStream(source, options);
+    
+    // Consume the stream by reading from it
+    const reader = stream.getReader();
+    
+    return new Promise<MD5Result>((resolve, reject) => {
+      let bytesProcessed = 0;
+      
+      reader.read().then(function process({ done, value }: any): void {
+        if (done) {
+          resolve(stream.getResult());
+          return;
+        }
+        
+        bytesProcessed += value.length;
+        reader.read().then(process);
+      }).catch(reject);
+    });
+  }
+
+  /**
+   * Static method to hash a File object
+   * @param file - File object to hash
+   * @param options - Stream options
+   * @returns Promise with MD5 result
+   */
+  static hashFile(
+    file: File,
+    options?: MD5ReadableStreamOptions
+  ): Promise<MD5Result> {
+    // File is already a Blob, so we can use its stream
+    const stream = file.stream();
+    return MD5ReadableStream.hash(stream, options);
+  }
+
+  /**
+   * Static method to hash a Blob object
+   * @param blob - Blob object to hash
+   * @param options - Stream options
+   * @returns Promise with MD5 result
+   */
+  static hashBlob(
+    blob: Blob,
+    options?: MD5ReadableStreamOptions
+  ): Promise<MD5Result> {
+    // Convert blob to arrayBuffer and process
+    return new Promise<MD5Result>((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        try {
+          const arrayBuffer = event.target?.result as ArrayBuffer;
+          const stream = new ReadableStream({
+            start(controller) {
+              controller.enqueue(new Uint8Array(arrayBuffer));
+              controller.close();
+            }
+          });
+          resolve(MD5ReadableStream.hash(stream, options));
+        } catch (error) {
+          reject(error);
+        }
+      };
+      
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(blob);
+    });
+  }
+}
+
+/**
+ * Factory function to create MD5ReadableStream instance
+ * @param source - Source ReadableStream to hash
+ * @param options - Stream options
+ * @returns New MD5ReadableStream instance
+ */
+export function createMD5ReadableStream(
+  source: ReadableStream,
+  options?: MD5ReadableStreamOptions
+): MD5ReadableStream {
+  return new MD5ReadableStream(source, options);
+}
+
+/**
+ * Hash a ReadableStream and return MD5 result
+ * @param stream - ReadableStream to hash
+ * @param options - Stream options
+ * @returns Promise with MD5 result (digest and bytes processed)
+ * 
+ * @example
+ * ```ts
+ * import { hashReadableStream } from 'pure-md5';
+ * 
+ * const response = await fetch('https://example.com/file.txt');
+ * const result = await hashReadableStream(response.body!);
+ * console.log('MD5:', result.digest);
+ * console.log('Bytes:', result.bytesProcessed);
+ * ```
+ */
+export async function hashReadableStream(
+  stream: ReadableStream,
+  options?: MD5ReadableStreamOptions
+): Promise<MD5Result> {
+  const reader = stream.getReader();
+  const hashStream = new MD5ReadableStream(stream, options);
+  
+  // Consume the stream
+  let totalBytes = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    
+    if (done) {
+      break;
+    }
+    
+    if (value) {
+      totalBytes += value.length;
+    }
+  }
+  
+  return hashStream.getResult();
+}
+
+/**
+ * Hash a File object and return MD5 result
+ * @param file - File object to hash
+ * @param options - Stream options
+ * @returns Promise with MD5 result
+ * 
+ * @example
+ * ```ts
+ * import { hashFile } from 'pure-md5';
+ * 
+ * const input = document.querySelector('input[type="file"]');
+ * input.addEventListener('change', async (e) => {
+ *   const file = (e.target as HTMLInputElement).files![0];
+ *   const result = await hashFile(file);
+ *   console.log('MD5:', result.digest);
+ * });
+ * ```
+ */
+export async function hashFile(
+  file: File,
+  options?: MD5ReadableStreamOptions
+): Promise<MD5Result> {
+  return MD5ReadableStream.hashFile(file, options);
+}
+
+/**
+ * Hash a Blob object and return MD5 result
+ * @param blob - Blob object to hash
+ * @param options - Stream options
+ * @returns Promise with MD5 result
+ * 
+ * @example
+ * ```ts
+ * import { hashBlob } from 'pure-md5';
+ * 
+ * const canvas = document.querySelector('canvas');
+ * canvas.toBlob(async (blob) => {
+ *   const result = await hashBlob(blob!);
+ *   console.log('MD5:', result.digest);
+ * });
+ * ```
+ */
+export async function hashBlob(
+  blob: Blob,
+  options?: MD5ReadableStreamOptions
+): Promise<MD5Result> {
+  return MD5ReadableStream.hashBlob(blob, options);
+}
+
+/**
+ * Consume a ReadableStream while computing MD5
+ * @param source - Source ReadableStream to consume and hash
+ * @param options - Stream options
+ * @returns Promise with MD5 result
+ */
+export async function consumeWithMD5(
+  source: ReadableStream,
+  options?: MD5ReadableStreamOptions
+): Promise<MD5Result> {
+  const reader = source.getReader();
+  const hashStream = new MD5ReadableStream(source, options);
+  
+  // Consume the stream
+  let totalBytes = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    
+    if (done) {
+      break;
+    }
+    
+    if (value) {
+      totalBytes += value.length;
+    }
+  }
+  
+  return hashStream.getResult();
+}

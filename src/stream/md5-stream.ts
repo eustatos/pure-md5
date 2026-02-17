@@ -14,8 +14,8 @@ import add32 from '../add32';
 interface MD5State {
   state: number[];
   bytesProcessed: number;
-  buffer: number[];
   bufferLength: number;
+  buffer: Uint8Array;
 }
 
 /**
@@ -49,6 +49,8 @@ export class MD5Stream extends Transform {
   private state: MD5State;
   private add32: (x: number, y: number) => number;
   private readonly initialMD5State = [1732584193, -271733879, -1732584194, 271733878];
+  private readonly bufferCapacity: number = 64;
+  private buffer: Uint8Array = new Uint8Array(this.bufferCapacity);
 
   /**
    * Create new MD5Stream instance
@@ -64,8 +66,8 @@ export class MD5Stream extends Transform {
     this.state = {
       state: [...this.initialMD5State],
       bytesProcessed: 0,
-      buffer: [],
-      bufferLength: 0
+      bufferLength: 0,
+      buffer: this.buffer
     };
   }
 
@@ -76,33 +78,54 @@ export class MD5Stream extends Transform {
    */
   _transform(chunk: Buffer, _encoding: BufferEncoding, callback: TransformCallback): void {
     try {
-      const data = chunk as Buffer;
+      let data = chunk as Buffer;
       const dataLength = data.length;
       
-      // Combine with any existing buffer
-      if (this.state.bufferLength > 0 && dataLength > 0) {
-        const combinedLength = this.state.bufferLength + dataLength;
-        const combined = new Array<number>(combinedLength);
+      if (dataLength === 0) {
+        callback();
+        return;
+      }
+
+      // Combine with remaining buffer if needed
+      if (this.state.bufferLength > 0) {
+        const currentBufferLength = this.state.bufferLength;
+        const neededBytes = 64 - currentBufferLength;
+        const bytesToCopy = Math.min(dataLength, neededBytes);
         
-        // Copy existing buffer
-        for (let i = 0; i < this.state.bufferLength; i++) {
-          combined[i] = this.state.buffer[i];
-        }
-        // Append new data
-        for (let i = 0; i < dataLength; i++) {
-          combined[this.state.bufferLength + i] = data[i];
+        // Copy data to buffer
+        for (let i = 0; i < bytesToCopy; i++) {
+          this.buffer[currentBufferLength + i] = data[i];
         }
         
-        this.state.buffer = combined;
-        this.state.bufferLength = combinedLength;
-      } else if (dataLength > 0) {
-        // Just use the new data
-        this.state.buffer = Array.from(data);
-        this.state.bufferLength = dataLength;
+        this.state.bufferLength += bytesToCopy;
+        
+        // If buffer is full, process it
+        if (this.state.bufferLength === 64) {
+          this._processBufferBlock();
+        }
+        
+        // If we used all data, we're done
+        if (bytesToCopy === dataLength) {
+          callback();
+          return;
+        }
+        
+        // Move to next position in original data
+        // Shift remaining data to beginning of buffer
+        const remainingData = dataLength - bytesToCopy;
+        for (let i = 0; i < remainingData; i++) {
+          data[i] = data[bytesToCopy + i];
+        }
+        // Create a new buffer with only the remaining data
+        const remainingBuffer = Buffer.alloc(remainingData);
+        for (let i = 0; i < remainingData; i++) {
+          remainingBuffer[i] = data[i];
+        }
+        data = remainingBuffer;
       }
       
-      // Process full 64-byte blocks
-      const fullBlocks = Math.floor(this.state.bufferLength / 64);
+      // Process full 64-byte blocks directly from data
+      const fullBlocks = Math.floor(data.length / 64);
       
       for (let i = 0; i < fullBlocks; i++) {
         const blockStart = i * 64;
@@ -111,34 +134,57 @@ export class MD5Stream extends Transform {
         for (let j = 0; j < 16; j++) {
           const idx = blockStart + j * 4;
           block[j] = 
-            this.state.buffer[idx] +
-            (this.state.buffer[idx + 1] << 8) +
-            (this.state.buffer[idx + 2] << 16) +
-            (this.state.buffer[idx + 3] << 24);
+            data[idx] +
+            (data[idx + 1] << 8) +
+            (data[idx + 2] << 16) +
+            (data[idx + 3] << 24);
         }
         
         md5cycle(this.state.state, block, this.add32);
         this.state.bytesProcessed += 64;
       }
       
-      // Keep remaining bytes in buffer
-      const remaining = this.state.bufferLength % 64;
+      // Store remaining bytes in buffer
+      const remaining = data.length % 64;
       if (remaining > 0) {
-        const newBuffer = new Array<number>(remaining);
-        for (let i = 0; i < remaining; i++) {
-          newBuffer[i] = this.state.buffer[fullBlocks * 64 + i];
+        // Ensure buffer is large enough
+        if (this.buffer.length < remaining) {
+          this.buffer = new Uint8Array(remaining);
+          this.state.buffer = this.buffer;
         }
-        this.state.buffer = newBuffer;
+        
+        // Copy remaining bytes to buffer
+        for (let i = 0; i < remaining; i++) {
+          this.buffer[i] = data[fullBlocks * 64 + i];
+        }
         this.state.bufferLength = remaining;
-      } else {
-        this.state.buffer = [];
-        this.state.bufferLength = 0;
       }
       
       callback();
     } catch (error) {
       callback(error as Error);
     }
+  }
+
+  /**
+   * Process the current buffer as a complete block
+   */
+  private _processBufferBlock(): void {
+    const buffer = this.state.buffer;
+    const block: number[] = [];
+    
+    for (let j = 0; j < 16; j++) {
+      const idx = j * 4;
+      block[j] = 
+        buffer[idx] +
+        (buffer[idx + 1] << 8) +
+        (buffer[idx + 2] << 16) +
+        (buffer[idx + 3] << 24);
+    }
+    
+    md5cycle(this.state.state, block, this.add32);
+    this.state.bytesProcessed += 64;
+    this.state.bufferLength = 0;
   }
 
   /**
@@ -219,9 +265,12 @@ export class MD5Stream extends Transform {
     this.state = {
       state: [...this.initialMD5State],
       bytesProcessed: 0,
-      buffer: [],
-      bufferLength: 0
+      bufferLength: 0,
+      buffer: this.buffer
     };
+    this.buffer = new Uint8Array(this.bufferCapacity);
+    this.state.buffer = this.buffer;
+    this.state.bufferLength = 0;
   }
 
   /**
