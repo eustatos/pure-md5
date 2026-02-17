@@ -1,6 +1,6 @@
 {
   "name": "pure-md5",
-  "version": "0.1.15",
+  "version": "0.2.0",
   "description": "A lightweight JavaScript function for hashing messages by the MD5 algorithm",
   "type": "module",
   "main": "./dist/index.js",
@@ -87,6 +87,7 @@
     "./package.json": "./package.json"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.2",
     "@changesets/cli": "^2.29.8",
     "@types/jest": "^29.5.14",
     "codecov": "^3.8.3",

@@ -19,7 +19,7 @@ describe('WebCryptoBackend', () => {
   describe('Basic hashing', () => {
     it('should hash string correctly', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -29,7 +29,7 @@ describe('WebCryptoBackend', () => {
     
     it('should hash empty string', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -39,7 +39,7 @@ describe('WebCryptoBackend', () => {
     
     it('should hash special characters', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -49,7 +49,7 @@ describe('WebCryptoBackend', () => {
     
     it('should hash unicode characters', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -59,7 +59,7 @@ describe('WebCryptoBackend', () => {
     
     it('should hash long string', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -72,7 +72,7 @@ describe('WebCryptoBackend', () => {
   describe('Binary data', () => {
     it('should hash Uint8Array', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -83,7 +83,7 @@ describe('WebCryptoBackend', () => {
     
     it('should hash ArrayBuffer', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -94,7 +94,7 @@ describe('WebCryptoBackend', () => {
     
     it('should hash empty Uint8Array', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -114,7 +114,7 @@ describe('WebCryptoBackend', () => {
   describe('Performance', () => {
     it('should hash 1MB data efficiently', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -132,7 +132,7 @@ describe('WebCryptoBackend', () => {
   describe('Consistency', () => {
     it('should produce same hash for same input', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -144,7 +144,7 @@ describe('WebCryptoBackend', () => {
     
     it('should produce different hash for different inputs', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -157,7 +157,7 @@ describe('WebCryptoBackend', () => {
   describe('Interface compliance', () => {
     it('should have correct name and version', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -167,7 +167,7 @@ describe('WebCryptoBackend', () => {
     
     it('should have reset method', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -176,7 +176,7 @@ describe('WebCryptoBackend', () => {
     
     it('should throw error on update (no streaming)', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
@@ -185,7 +185,7 @@ describe('WebCryptoBackend', () => {
     
     it('should throw error on digest (no streaming)', async () => {
       if (!backend) {
-        pending('Web Crypto API not available');
+        console.log('Skipping test: Web Crypto API not available');
         return;
       }
       
