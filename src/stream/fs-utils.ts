@@ -6,7 +6,7 @@
 import fs from 'fs';
 import { Readable } from 'stream';
 import { MD5Result, createMD5Stream } from './md5-stream.js';
-import { md5Core } from '../core/index.js';
+import { md5Buffer } from '../core/index.js';
 
 /**
  * Options for file hashing operations
@@ -253,8 +253,8 @@ export function hashFileSync(filePath: string): string {
     throw new Error(`Failed to read file ${filePath}: ${(error as Error).message}`);
   }
 
-  // Use synchronous MD5 computation
-  return md5Core(content.toString());
+  // Use synchronous MD5 computation with Buffer support
+  return md5Buffer(content);
 }
 
 /**
