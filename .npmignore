@@ -1,5 +1,49 @@
+# Source code
 src
-coverage
+
+# Test files
+__tests__
+*.test.ts
+*.test.ts.bak*
+
+# Benchmarks
+benchmarks
+*.bench.ts
+
+# Planning documents
+planning
+
+# Documentation (keep essential ones only)
+*.md
+!LICENSE.md
+!README.md
+
+# Build artifacts
+dist/chunk-*.js
+dist/chunk-*.js.map
+dist/adapters/*.map
+dist/core/*.map
+dist/stream/*.map
+dist/utils/*.map
+dist/*.map
+
+# Old lib directory
+lib
+lib/add32.type.d.ts
+lib/hex.d.ts
+lib/hex_chr.d.ts
+lib/rhex.d.ts
+lib/md5blk.d.ts
+lib/md51.d.ts
+lib/add32.d.ts
+lib/md5cycle.d.ts
+lib/cmn.d.ts
+lib/ff.d.ts
+lib/gg.d.ts
+lib/hh.d.ts
+lib/ii.d.ts
+
+# Config files (development only)
 .babelrc
 .prettierrc
 .travis.yml
@@ -7,17 +51,38 @@ coverage
 yarn.lock
 jestconfig.json
 tsconfig.json
-webpack.config.js 
-lib/add32.type.d.ts  
-lib/hex.d.ts         
-lib/hex_chr.d.ts     
-lib/rhex.d.ts        
-lib/md5blk.d.ts      
-lib/md51.d.ts        
-lib/add32.d.ts       
-lib/md5cycle.d.ts    
-lib/cmn.d.ts         
-lib/ff.d.ts          
-lib/gg.d.ts          
-lib/hh.d.ts          
-lib/ii.d.ts          
+tsup.config.js
+webpack.config.js
+
+# Coverage
+coverage
+
+# Changeset (development only)
+.changeset
+
+# IDE and other
+.node
+.git
+.github
+
+# Hidden files (development only)
+.aliases
+.bash_profile
+.bash_prompt
+
+# Other assets
+schema.svg
+
+# Build tools (should not be in npm package)
+*.config.ts
+*.config.js
+
+# Hidden directories (development only)
+.continue
+node_modules
+test-api.js
+scripts/postbuild.cjs
+dist/*.d.cts
+dist/md5-only.*
+dist/types-edGoGJ5V.*
+dist/types-edGoGJ5V.*

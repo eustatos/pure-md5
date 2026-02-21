@@ -2,23 +2,21 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig({
   entry: [
-    'src/index.ts',
-    'src/core/index.ts',
-    'src/adapters/webcrypto.ts',
-    'src/adapters/node.ts',
-    'src/adapters/ie11.ts',
-    'src/utils/detect.ts',
-    'src/stream/index.ts',
-    'src/stream/light/index.ts',
-    'src/stream/md5-stream.ts',
-    'src/stream/whatwg-stream.ts',
-    'src/stream/fs-utils.ts',
-    'src/stream/adapter.ts'
+    'src/index.ts',                    // Main module with all exports
+    'src/md5.ts',                      // Minimal md5 entry point (for tree-shaking)
+    'src/adapters/node.ts',            // Node.js backend
+    'src/adapters/webcrypto.ts',       // WebCrypto backend
+    'src/adapters/ie11.ts',            // IE11 backend (legacy)
+    'src/utils/detect.ts',             // Backend detection utility
+    'src/stream/md5-stream.ts',        // Node.js streaming
+    'src/stream/whatwg-stream.ts'      // WHATWG streams (browser)
   ],
-  format: ['cjs', 'esm'], // CommonJS and ES modules
-  dts: true, // .d.ts file generation
-  sourcemap: true, // Source maps for debugging
-  clean: true, // Output directory cleanup
-  minify: true, // Minification
-  treeshake: true // Aggressive tree-shaking
+  format: ['cjs', 'esm'],              // CommonJS and ES modules
+  dts: true,                           // Generate .d.ts files
+  sourcemap: false,                    // Disable sourcemaps for production to reduce package size
+  clean: true,                         // Output directory cleanup
+  minify: true,                        // Minification
+  treeshake: true,                     // Aggressive tree-shaking
+  bundle: true,                        // Bundle all dependencies into single files
+  splitting: false                     // Disable code splitting
 });

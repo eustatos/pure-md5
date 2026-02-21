@@ -27,7 +27,7 @@ pnpm add pure-md5
 ### Basic Usage
 
 ```javascript
-import { md5 } from 'pure-md5';
+import { md5 } from 'pure-md5/md5';
 
 const hash = md5('hello');
 console.log(hash); // "5d41402abc4b2a76b9719d911017c592"
@@ -50,7 +50,7 @@ fs.createReadStream('large-file.bin').pipe(stream);
 ## ✨ Features
 
 - ⚡ **Zero Dependencies** - No external dependencies, ever
-- 📦 **Tiny Bundle** - < 1KB gzipped
+- 📦 **Tiny Bundle** - ~1.4KB gzipped for md5() only (with tree-shaking), ~6KB for full bundle
 - 🎯 **Multiple APIs** - Simple, streaming, and promise-based
 - 🦺 **TypeScript Ready** - Full type definitions included
 - 🔌 **Adapter System** - Automatic detection (WebCrypto, Node.js, Pure JS)
@@ -80,16 +80,10 @@ fs.createReadStream('large-file.bin').pipe(stream);
 Compute MD5 hash of a string or buffer.
 
 ```javascript
-import { md5 } from 'pure-md5';
+import { md5 } from 'pure-md5/md5'; // Tree-shakeable, ~1.4KB
 
-// String input
-md5('hello'); // "5d41402abc4b2a76b9719d911017c592"
-
-// Buffer input
-md5(Buffer.from('hello')); // "5d41402abc4b2a76b9719d911017c592"
-
-// Custom encoding
-md5('hello', 'hex'); // "5d41402abc4b2a76b9719d911017c592"
+const hash = md5('hello');
+console.log(hash); // "5d41402abc4b2a76b9719d911017c592"
 ```
 
 ### Streaming API
@@ -199,14 +193,31 @@ console.log('Verified:', isVerified); // true or false
 
 ## 📊 Comparison with Alternatives
 
-| Feature | pure-md5 | crypto-js | js-md4 | Node.js crypto |
-|---------|----------|-----------|--------|----------------|
-| Bundle Size | <1KB | ~4KB | ~2KB | N/A |
-| Dependencies | 0 | 0 | 0 | 0 |
-| Streaming | ✅ | ❌ | ❌ | ✅ |
-| Browser Support | ✅ | ✅ | ✅ | ❌ |
-| TypeScript | ✅ | ❌ | ⚠️ | ❌ |
-| Zero Config | ✅ | ✅ | ❌ | ✅ |
+| Feature | pure-md5 | pvorb/node-md5 | crypto-js | js-md4 | Node.js crypto |
+|---------|----------|----------------|-----------|--------|----------------|
+| Bundle Size (md5 only) | ~1.4KB¹ | ~3KB | ~4KB | ~2KB | N/A |
+| Bundle Size (full) | ~6KB¹ | ~3KB | ~4KB | ~2KB | N/A |
+| Dependencies | 0 | 0 | 0 | 0 | 0 |
+| Streaming | ✅ | ❌ | ❌ | ❌ | ✅ |
+| Browser Support | ✅ | ❌ | ✅ | ✅ | ❌ |
+| TypeScript | ✅ | ❌ | ❌ | ⚠️ | ❌ |
+| Zero Config | ✅ | ❌² | ✅ | ❌ | ✅ |
+| Tree-shaking | ✅ | ❌ | ❌ | ❌ | N/A |
+| Pure JS (no Node) | ✅ | ❌ | ✅ | ✅ | ❌ |
+
+¹ **With tree-shaking**: Only import what you use!  
+² **Requires Node.js environment** - not browser-compatible
+
+### Why choose pure-md5 over pvorb/node-md5?
+
+1. **Browser Support**: pvorb/node-md5 only works in Node.js, while pure-md5 works everywhere
+2. **Tree-shaking**: pure-md5 supports modern tree-shaking for smaller bundles
+3. **Streaming**: built-in streaming API for large files in pure-md5
+4. **TypeScript**: first-class TypeScript support with full type definitions
+5. **Zero dependencies**: truly zero-dependency implementation
+6. **Modern API**: cleaner, more intuitive interface with promise-based options
+
+pvorb/node-md5 is still a good choice if you only need Node.js and prefer its API style.
 
 ---
 
@@ -228,12 +239,15 @@ import { md5 } from 'pure-md5';
 
 ### Manual Adapter Selection
 
+Use adapter backends directly when you need explicit control:
+
 ```javascript
-import { md5 } from 'pure-md5/adapters/node';
-// or
-import { md5 } from 'pure-md5/adapters/webcrypto';
-// or
-import { md5 } from 'pure-md5/adapters/pure-js';
+import { NodeCryptoBackend, WebCryptoBackend, PureJSBackend } from 'pure-md5';
+
+// Create backend instances
+const nodeBackend = new NodeCryptoBackend();
+const hash = await nodeBackend.hash('hello');
+console.log(hash);
 ```
 
 ---

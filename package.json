@@ -1,6 +1,6 @@
 {
   "name": "pure-md5",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "A lightweight JavaScript function for hashing messages by the MD5 algorithm",
   "type": "module",
   "main": "./dist/index.js",
@@ -39,20 +39,20 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js"
     },
-    "./core": {
-      "types": "./dist/core/index.d.ts",
-      "import": "./dist/core/index.js",
-      "require": "./dist/core/index.js"
-    },
-    "./adapters/webcrypto": {
-      "types": "./dist/adapters/webcrypto.d.ts",
-      "import": "./dist/adapters/webcrypto.js",
-      "require": "./dist/adapters/webcrypto.js"
+    "./md5": {
+      "types": "./dist/md5.d.ts",
+      "import": "./dist/md5.js",
+      "require": "./dist/md5.cjs"
     },
     "./adapters/node": {
       "types": "./dist/adapters/node.d.ts",
       "import": "./dist/adapters/node.js",
       "require": "./dist/adapters/node.js"
+    },
+    "./adapters/webcrypto": {
+      "types": "./dist/adapters/webcrypto.d.ts",
+      "import": "./dist/adapters/webcrypto.js",
+      "require": "./dist/adapters/webcrypto.js"
     },
     "./adapters/ie11": {
       "types": "./dist/adapters/ie11.d.ts",
@@ -78,11 +78,6 @@
       "types": "./dist/stream/index.d.ts",
       "import": "./dist/stream/index.js",
       "require": "./dist/stream/index.js"
-    },
-    "./stream/light": {
-      "types": "./dist/stream/light/index.d.ts",
-      "import": "./dist/stream/light/index.js",
-      "require": "./dist/stream/light/index.js"
     },
     "./package.json": "./package.json"
   },
