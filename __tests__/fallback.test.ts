@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterEach, vi, beforeAll, afterAll } from 'vitest';
 import {
   FallbackManager,
   robustHash,
@@ -46,7 +47,7 @@ describe('FallbackManager', () => {
       expect(hasNodeCrypto).toBe(nodeAvailable);
     });
 
-    xit('should check webcrypto availability', async () => {
+    it.skip('should check webcrypto availability', async () => {
       const available = await manager.getAvailableBackends();
       const hasWebCrypto = available.includes('webcrypto');
       const webAvailable = WebCryptoBackend.isAvailable();
@@ -202,7 +203,7 @@ describe('robustHash function', () => {
   });
 
   it('should support reportFallback option', async () => {
-    const consoleSpy = jest.spyOn(console, 'info').mockImplementation();
+    const consoleSpy = vi.spyOn(console, 'info').mockImplementation();
 
     const result = await robustHash('hello', {
       fallback: true,

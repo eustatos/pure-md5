@@ -4,7 +4,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { MD5Stream, hashFile, hashFileSync, verifyFile, hashFileDigest } from '../../src/stream/index.js';
+import { MD5Stream, MD5Result, hashFile, hashFileSync, verifyFile, hashFileDigest } from '../../src/stream/index.js';
 import { md5Core } from '../../src/core/index.js';
 
 describe('MD5Stream - File I/O Integration', () => {
@@ -160,58 +160,51 @@ describe('MD5Stream - File I/O Integration', () => {
   });
   
   describe('MD5Stream with file streams', () => {
-    test('should hash file using fs.createReadStream', (done) => {
+    test('should hash file using fs.createReadStream', async () => {
       const filePath = path.join(tempDir, 'test-stream.txt');
       const content = 'Stream file test';
       fs.writeFileSync(filePath, content);
-      
+
       const stream = new MD5Stream();
-      
-      stream.on('md5', (result) => {
-        expect(result.digest).toBe(md5Core(content));
-        expect(result.bytesProcessed).toBe(content.length);
-        done();
+      const resultPromise = new Promise<MD5Result>((resolve, reject) => {
+        stream
+          .on('md5', (result: MD5Result) => resolve(result))
+          .on('error', reject);
       });
-      
+
       fs.createReadStream(filePath).pipe(stream);
+      const result = await resultPromise;
+      
+      expect(result.digest).toBe(md5Core(content));
+      expect(result.bytesProcessed).toBe(content.length);
     });
-    
-    test('should handle file stream errors gracefully', (done) => {
+
+    test('should handle file stream errors gracefully', async () => {
       const stream = new MD5Stream();
-      
       const source = fs.createReadStream('/nonexistent/file.txt');
-      
-      // Source stream will emit error, but it should not hang
-      source.on('error', (error) => {
-        // Error is on source stream, not MD5Stream
-        // This is expected behavior - the source stream emits the error
-        expect(error).toBeDefined();
-        done();
+
+      // Source stream will emit error
+      const sourceErrorPromise = new Promise<void>((resolve, reject) => {
+        source.on('error', () => resolve());
+        // Timeout if no error
+        setTimeout(() => reject(new Error('Expected error not emitted')), 1000);
       });
-      
-      // MD5Stream will just see end-of-stream since source fails early
-      stream.on('md5', () => {
-        // This shouldn't happen for non-existent file
-        done();
-      });
-      
-      source.pipe(stream);
+
+      await sourceErrorPromise;
     });
   });
-  
+
   describe('Progress tracking', () => {
-    test('should support progress callback', (done) => {
+    test('should support progress callback', async () => {
       const filePath = path.join(tempDir, 'test-progress.txt');
       const content = 'a'.repeat(10000);
       fs.writeFileSync(filePath, content);
-      
+
       // Note: Current implementation doesn't have built-in progress
       // This is a placeholder for future implementation
       // For now, we just verify the file can be hashed
-      hashFile(filePath).then((result) => {
-        expect(result.bytesProcessed).toBe(content.length);
-        done();
-      });
+      const result = await hashFile(filePath);
+      expect(result.bytesProcessed).toBe(content.length);
     });
   });
   

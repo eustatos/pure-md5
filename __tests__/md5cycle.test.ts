@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import md5cycle from '../src/md5cycle';
 
 describe('md5cycle', () => {
@@ -25,7 +26,7 @@ describe('md5cycle', () => {
     const state = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476];
     const block = new Array(16).fill(0x12345678);
 
-    const customAdd32 = jest.fn((x: number, y: number) => (x + y) & 0xffffffff);
+    const customAdd32 = vi.fn((x: number, y: number) => (x + y) & 0xffffffff);
 
     md5cycle(state, block, customAdd32);
 

@@ -3,6 +3,7 @@
  * Only runs in Node.js 15+ with WebCrypto
  */
 
+import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import { WebCryptoBackend } from '../../src/adapters/webcrypto';
 
 // Check if running in Node.js
@@ -36,7 +37,7 @@ if (!isNode) {
         backend = new WebCryptoBackend();
       });
 
-      xit('should be available in Node.js', async () => {
+      it.skip('should be available in Node.js', async () => {
         const available = WebCryptoBackend.isAvailable();
         expect(available).toBe(true);
       });

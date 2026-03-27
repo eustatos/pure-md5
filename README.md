@@ -3,12 +3,9 @@
 **A lightweight, zero-dependency JavaScript library for MD5 hashing with streaming support for large files.**
 
 [![npm version](https://img.shields.io/npm/v/pure-md5.svg?style=flat&color=informational)](https://npmjs.org/package/pure-md5)
-[![npm downloads](https://img.shields.io/npm/dm/pure-md5.svg?style=flat&color=blue)](https://npmjs.org/package/pure-md5)
+[![npm downloads](https://img.shields.io/npm/dw/pure-md5.svg?style=flat&color=blue)](https://npmjs.org/package/pure-md5)
+[![Coverage Status](https://coveralls.io/repos/github/eustatos/pure-md5/badge.svg?branch=main)](https://coveralls.io/github/eustatos/pure-md5?branch=main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/eustatos/pure-md5/npm-publish.yml?branch=main&style=flat&logo=github)](https://github.com/eustatos/pure-md5/actions/workflows/npm-publish.yml)
-[![codecov](https://img.shields.io/codecov/c/github/eustatos/pure-md5/main?style=flat&logo=codecov)](https://codecov.io/gh/eustatos/pure-md5)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/pure-md5?style=flat&color=success&label=.bundle%20size)](https://bundlephobia.com/result?p=pure-md5)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6+-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
 
 ---
 
@@ -298,6 +295,3 @@ If you find this project helpful, please consider supporting it:
 - [RFC 1321 - The MD5 Message-Digest Algorithm](https://www.ietf.org/rfc/rfc1321.txt)
 - [Node.js crypto documentation](https://nodejs.org/api/crypto.html)
 
----
-
-*Made with ❤️ by [Aleksandr Astashkin](https://github.com/eustatos)

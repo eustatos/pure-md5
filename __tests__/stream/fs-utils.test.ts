@@ -198,11 +198,11 @@ describe('File System Utilities', () => {
   describe('integration with MD5Stream', () => {
     test('should produce same hash as MD5Stream', async () => {
       const stream = fs.createReadStream(testFile);
-      const { MD5Stream, pipeThroughMD5 } = require('../../src/stream/md5-stream.js');
+      const { MD5Stream, pipeThroughMD5 } = await import('../../src/stream/md5-stream.js');
       const md5Stream = new MD5Stream();
       const streamResult = await pipeThroughMD5.call(md5Stream, stream);
       const fileResult = await hashFile(testFile);
-      
+
       expect(streamResult.digest).toBe(fileResult.digest);
     });
   });
