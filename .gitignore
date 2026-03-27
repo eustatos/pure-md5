@@ -1,6 +1,35 @@
-node_modules
-lib
+# Build artifacts
 dist
+lib
 coverage
+
+# Dependencies
+node_modules
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# AI assistant config
+.continue/
+
+# Personal files
+.aliases
+.bash_profile
+.bash_prompt
+
+# Test files
 *error.log
 *debug.log
