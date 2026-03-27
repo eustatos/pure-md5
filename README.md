@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/pure-md5.svg?style=flat&color=informational)](https://npmjs.org/package/pure-md5)
 [![npm downloads](https://img.shields.io/npm/dw/pure-md5.svg?style=flat&color=blue)](https://npmjs.org/package/pure-md5)
-[![Coverage Status](https://coveralls.io/repos/github/eustatos/pure-md5/badge.svg?branch=main)](https://coveralls.io/github/eustatos/pure-md5?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/eustatos/pure-md5/badge.svg?branch=master)](https://coveralls.io/github/eustatos/pure-md5?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 ---
