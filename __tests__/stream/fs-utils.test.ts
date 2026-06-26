@@ -4,6 +4,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { Readable } from 'stream';
 import {
   hashFile,
@@ -14,6 +15,11 @@ import {
 } from '../../src/stream/fs-utils.js';
 import { md5Core } from '../../src/core/index.js';
 
+/** Compute expected MD5 hash from file bytes (platform-independent) */
+function fileMD5(filePath: string): string {
+  return crypto.createHash('md5').update(fs.readFileSync(filePath)).digest('hex');
+}
+
 describe('File System Utilities', () => {
   const fixturesDir = path.join(__dirname, '..', 'integration', 'fixtures');
   const testFile = path.join(fixturesDir, 'test-file.txt');
@@ -22,9 +28,11 @@ describe('File System Utilities', () => {
   describe('hashFile', () => {
     test('should hash a text file correctly', async () => {
       const result = await hashFile(testFile);
-      
-      expect(result.digest).toBe(md5Core('Hello, World!\n'));
-      expect(result.bytesProcessed).toBe(14);
+      const expected = fileMD5(testFile);
+      const fileSize = fs.statSync(testFile).size;
+
+      expect(result.digest).toBe(expected);
+      expect(result.bytesProcessed).toBe(fileSize);
       expect(typeof result.digest).toBe('string');
       expect(result.digest.length).toBe(32);
     });
@@ -74,7 +82,7 @@ describe('File System Utilities', () => {
 
     test('should support chunkSize option', async () => {
       const result = await hashFile(testFile, { chunkSize: 1024 });
-      expect(result.digest).toBe(md5Core('Hello, World!\n'));
+      expect(result.digest).toBe(fileMD5(testFile));
     });
 
     test('should support onProgress option', async () => {
@@ -84,10 +92,11 @@ describe('File System Utilities', () => {
           progressValues.push(current);
         }
       });
-      
-      expect(result.digest).toBe(md5Core('Hello, World!\n'));
+
+      const fileSize = fs.statSync(testFile).size;
+      expect(result.digest).toBe(fileMD5(testFile));
       expect(progressValues.length).toBeGreaterThan(0);
-      expect(progressValues[progressValues.length - 1]).toBe(14);
+      expect(progressValues[progressValues.length - 1]).toBe(fileSize);
     });
   });
 
@@ -95,9 +104,10 @@ describe('File System Utilities', () => {
     test('should hash a readable stream correctly', async () => {
       const stream = fs.createReadStream(testFile);
       const result = await hashFileStream(stream);
-      
-      expect(result.digest).toBe(md5Core('Hello, World!\n'));
-      expect(result.bytesProcessed).toBe(14);
+      const fileSize = fs.statSync(testFile).size;
+
+      expect(result.digest).toBe(fileMD5(testFile));
+      expect(result.bytesProcessed).toBe(fileSize);
     });
 
     test('should handle buffer input through stream', async () => {
@@ -125,10 +135,10 @@ describe('File System Utilities', () => {
   describe('hashFileSync', () => {
     test('should hash a text file synchronously', () => {
       const digest = hashFileSync(testFile);
-      
+
       expect(typeof digest).toBe('string');
       expect(digest.length).toBe(32);
-      expect(digest).toBe(md5Core('Hello, World!\n'));
+      expect(digest).toBe(fileMD5(testFile));
     });
 
     test('should hash a binary file synchronously', () => {
@@ -158,22 +168,22 @@ describe('File System Utilities', () => {
 
   describe('verifyFile', () => {
     test('should verify correct digest', async () => {
-      const digest = md5Core('Hello, World!\n');
+      const digest = fileMD5(testFile);
       const result = await verifyFile(testFile, digest);
-      
+
       expect(result).toBe(true);
     });
 
     test('should reject incorrect digest', async () => {
       const result = await verifyFile(testFile, 'invalid digest');
-      
+
       expect(result).toBe(false);
     });
 
     test('should be case-insensitive for digest', async () => {
-      const digest = md5Core('Hello, World!\n').toUpperCase();
+      const digest = fileMD5(testFile).toUpperCase();
       const result = await verifyFile(testFile, digest);
-      
+
       expect(result).toBe(true);
     });
   });

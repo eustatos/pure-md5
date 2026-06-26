@@ -1,0 +1,3 @@
+# Ensure test files use Unix line endings
+* text eol=lf
+test-file.txt text eol=lf
