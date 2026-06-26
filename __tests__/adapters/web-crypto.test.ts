@@ -52,9 +52,9 @@ describe('WebCryptoBackend', () => {
         console.log('Skipping test: Web Crypto API not available');
         return;
       }
-      
+
       const result = await backend.hash('Привет мир');
-      expect(result).toBe('5abca3326cf0cefc00efe7065b5e0cf6');
+      expect(result).toBe('79d636ccef972a9d10db69750cd53e8b');
     });
     
     it('should hash long string', async () => {

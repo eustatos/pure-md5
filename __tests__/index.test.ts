@@ -71,11 +71,11 @@ describe('md5', () => {
     expect(hash1).toMatch(/^[0-9a-f]{32}$/);
   });
 
-  test('should handle Unicode strings (using UTF-16 code units)', () => {
-    // Note: This implementation uses charCodeAt() which returns UTF-16 code units
-    // This is different from UTF-8 encoding used by some other MD5 implementations
-    expect(md5('🎉')).toBe('801c2a6dbe01c0c530a03a5f5f5b1214');
-    expect(md5('Привет мир')).toBe('5abca3326cf0cefc00efe7065b5e0cf6'); // "Hello world" in Russian
+  test('should handle Unicode strings (using UTF-8 encoding)', () => {
+    // Note: This implementation now uses UTF-8 encoding for proper Unicode support
+    // Hashes verified against Node.js crypto implementation
+    expect(md5('🎉')).toBe('5b4042e548183ef230051ab6861fb02e');
+    expect(md5('Привет мир')).toBe('79d636ccef972a9d10db69750cd53e8b');
   });
 
   test('should verify the built-in check works', () => {
@@ -83,5 +83,14 @@ describe('md5', () => {
     // This ensures the runtime check doesn't break functionality
     const result = md5('hello');
     expect(result).toBe('5d41402abc4b2a76b9719d911017c592');
+  });
+
+  test('should handle em-dash character correctly (issue #21)', () => {
+    // Test with em-dash (—) character
+    // Expected hash verified against Node.js crypto implementation
+    expect(md5('—')).toBe('26aeabd0c99c77002e55825fbcd435af');
+    
+    // Test with string containing em-dash
+    expect(md5('test—string')).toBe('d25ba991ad3d3deddd0652747ec22a5b');
   });
 });

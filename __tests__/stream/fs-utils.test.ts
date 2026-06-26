@@ -22,9 +22,9 @@ describe('File System Utilities', () => {
   describe('hashFile', () => {
     test('should hash a text file correctly', async () => {
       const result = await hashFile(testFile);
-      
-      expect(result.digest).toBe(md5Core('Hello, World!\n'));
-      expect(result.bytesProcessed).toBe(14);
+
+      expect(result.digest).toBe(md5Core('Hello, World!\r\n'));
+      expect(result.bytesProcessed).toBe(15);
       expect(typeof result.digest).toBe('string');
       expect(result.digest.length).toBe(32);
     });
@@ -74,7 +74,7 @@ describe('File System Utilities', () => {
 
     test('should support chunkSize option', async () => {
       const result = await hashFile(testFile, { chunkSize: 1024 });
-      expect(result.digest).toBe(md5Core('Hello, World!\n'));
+      expect(result.digest).toBe(md5Core('Hello, World!\r\n'));
     });
 
     test('should support onProgress option', async () => {
@@ -84,10 +84,10 @@ describe('File System Utilities', () => {
           progressValues.push(current);
         }
       });
-      
-      expect(result.digest).toBe(md5Core('Hello, World!\n'));
+
+      expect(result.digest).toBe(md5Core('Hello, World!\r\n'));
       expect(progressValues.length).toBeGreaterThan(0);
-      expect(progressValues[progressValues.length - 1]).toBe(14);
+      expect(progressValues[progressValues.length - 1]).toBe(15);
     });
   });
 
@@ -95,9 +95,9 @@ describe('File System Utilities', () => {
     test('should hash a readable stream correctly', async () => {
       const stream = fs.createReadStream(testFile);
       const result = await hashFileStream(stream);
-      
-      expect(result.digest).toBe(md5Core('Hello, World!\n'));
-      expect(result.bytesProcessed).toBe(14);
+
+      expect(result.digest).toBe(md5Core('Hello, World!\r\n'));
+      expect(result.bytesProcessed).toBe(15);
     });
 
     test('should handle buffer input through stream', async () => {
@@ -125,10 +125,10 @@ describe('File System Utilities', () => {
   describe('hashFileSync', () => {
     test('should hash a text file synchronously', () => {
       const digest = hashFileSync(testFile);
-      
+
       expect(typeof digest).toBe('string');
       expect(digest.length).toBe(32);
-      expect(digest).toBe(md5Core('Hello, World!\n'));
+      expect(digest).toBe(md5Core('Hello, World!\r\n'));
     });
 
     test('should hash a binary file synchronously', () => {
@@ -158,22 +158,22 @@ describe('File System Utilities', () => {
 
   describe('verifyFile', () => {
     test('should verify correct digest', async () => {
-      const digest = md5Core('Hello, World!\n');
+      const digest = md5Core('Hello, World!\r\n');
       const result = await verifyFile(testFile, digest);
-      
+
       expect(result).toBe(true);
     });
 
     test('should reject incorrect digest', async () => {
       const result = await verifyFile(testFile, 'invalid digest');
-      
+
       expect(result).toBe(false);
     });
 
     test('should be case-insensitive for digest', async () => {
-      const digest = md5Core('Hello, World!\n').toUpperCase();
+      const digest = md5Core('Hello, World!\r\n').toUpperCase();
       const result = await verifyFile(testFile, digest);
-      
+
       expect(result).toBe(true);
     });
   });

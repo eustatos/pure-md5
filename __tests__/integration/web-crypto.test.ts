@@ -18,7 +18,7 @@ describe('WebCrypto Backend Integration', () => {
     
     it('should handle unicode', async () => {
       const result = await md5('Привет мир');
-      expect(result).toBe('5abca3326cf0cefc00efe7065b5e0cf6');
+      expect(result).toBe('79d636ccef972a9d10db69750cd53e8b');
     });
   });
   

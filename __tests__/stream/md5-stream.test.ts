@@ -123,7 +123,8 @@ describe('MD5Stream', () => {
     const data = Buffer.from([0x00, 0x01, 0x02, 0x03, 0xff, 0xfe, 0xfd]);
     stream.end(data);
     const result = await resultPromise;
-    const expected = md5Core(data.toString('binary'));
+    // MD5 of raw buffer bytes (not string conversion)
+    const expected = require('crypto').createHash('md5').update(data).digest('hex');
     expect(result.digest).toBe(expected);
     expect(result.bytesProcessed).toBe(data.length);
   });
